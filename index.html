@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<title>My Neighborhood</title>
 </head>
 <body>
-	<header>
-		<h1>COME ON AND CHECK OUT MY NEIGHBORHOOD</h1>
+	
+	<ul id="neighborhood-list" data-bind="foreach: neighborhoodList">
+		<li class="neighborhood-list-item" data-bind="text: name, click: $parent.switchCurrentNeighborhood"></li>
+	</ul>
+	<header id="welcome-header">
+		<h1>COME ON AND CHECK OUT MY <span data-bind="text: currentNeighborhood().name()"></span> NEIGHBORHOOD</h1>
 	</header>
 
 	<div id="map-container">
 		This is the map container :)
 	</div>
 
-	<footer>
-		<h1>IF YOU WANNA KNOW MORE ABOUT MY NEIGHBORHOOD, JUST GIVE ME A CALL!</h1>
-	</footer>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi1BJ9xxGNg4x1tUgzi64InbXH5ev1wxc&callback=initMap"></script>
 	<script type="text/javascript" src="js/lib/jquery-3.1.1.js"></script>
 	<script type="text/javascript" src="js/lib/knockout-3.4.2.js"></script>
 	<script type="text/javascript" src="js/app.js"></script>
