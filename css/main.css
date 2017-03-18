@@ -1,24 +1,62 @@
 html, body {
+	z-index: 3;
 	height: 100%;
 	width: 100%;
 	margin: 0;
 }
+
 #map-container {
+	position: absolute;
 	height: 100%;
 	width: 100%;
-}
-
-header {
-	position: absolute;
+	top: 0;
 	z-index: 1;
 }
 
-footer {
+#info-stripe {
 	position: absolute;
+	top: 0;
+	height: 13%;
+	width: 100%;
+	background: #1A4A00;
+	z-index: 2;
 }
 
-ul {
+#welcome-header {
 	position: absolute;
-	left: 40%;
-	z-index: 1;
+	top: 10px;
+	left: 10%;
+	z-index: 3;
+	background: #549431;
+	border: 2px solid black;
+	border-radius: 10px;
+	min-width: 80%;
+	min-height: 5%;
 }
+
+#welcome-header h1 {
+	margin-top: 2.5%;
+	text-align: center;
+	color: #AEDE94;
+}
+
+#neighborhood-list {
+	position: absolute;
+	top: 9%;
+	left: 35%;
+	margin: 0;
+	padding: 10px;
+	z-index: 3;
+	background: #549431;
+	border-radius: 10px;
+}
+
+#neighborhood-list .neighborhood-list-item {
+	display: inline;
+	font-size: 20px;
+	color: #AEDE94;
+}
+
+.neighborhood-list-item + .neighborhood-list-item {
+	margin-left: 30px;
+}F12

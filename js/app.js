@@ -1,22 +1,3 @@
-// ko.bindingHandlers.googleMap = {
-// 	init: function (element, valueAccessor) {
-// 		var mapObj = ko.utils.unwrapObservable(valueAccessor());
-// 		// var latLon = new google.maps.LatLng(
-// 		// 		ko.utils.unwrapObservable(mapObj.lat),
-// 		// 		ko.utils.unwrapObservable(mapObj.lng));
-// 		var mapOptions = {
-// 			center: {
-// 				lat: mapObj.lat,
-// 				lng: mapObj.lng
-// 			},
-// 			zoom: 15
-// 		}
-
-// 		mapObj.googleMap = new google.maps.Map(element, mapOptions)
-// 	}
-// };
-
-
 var viewModel = function (map, neighborhoods) {
 	var self = this;
 	//initial neighborhood List
@@ -34,11 +15,6 @@ var viewModel = function (map, neighborhoods) {
 		self.currentNeighborhood(neighborhood);
 		createMap(self.currentNeighborhood().latLon())
 	}
-
-	self.myMap = ko.observable({
-		lat: self.currentNeighborhood().latLon().lat,
-		lng: self.currentNeighborhood().latLon().lng
-	});
 }
 
 
@@ -57,23 +33,6 @@ function createMap(latLng) {
 		zoom: 15
 	});
 }
-
-ko.bindingHandlers.map = {
-
-	update: function (element, valueAccessor) {
-		console.log(valueAccessor)
-		var mapObj = ko.utils.unwrapObservable(valueAccessor());
-		var latLng = new google.maps.LatLng(
-			ko.utils.unwrapObservable(mapObj.lat),
-			ko.utils.unwrapObservable(mapObj.lng));
-
-		var mapOptions  = {
-			center: latLng,
-			zoom: 15,
-		}
-		mapObj.googleMap = new google.maps.Map(element, mapOptions);
-	}
-};
 
 // This is the map initializer that is used in the google API callback
 function initMap() {
