@@ -1,5 +1,4 @@
 html, body {
-	z-index: 3;
 	height: 100%;
 	width: 100%;
 	margin: 0;
@@ -14,49 +13,54 @@ html, body {
 }
 
 #info-stripe {
-	position: absolute;
-	top: 0;
-	height: 13%;
-	width: 100%;
+	position: relative;
 	background: #1A4A00;
 	z-index: 2;
+	padding: 10px 60px 20px 60px;
+	border-bottom: 2px solid #1fDD2D;
 }
 
 #welcome-header {
-	position: absolute;
-	top: 10px;
-	left: 10%;
-	z-index: 3;
+	z-index: 1;
 	background: #549431;
-	border: 2px solid black;
+	border: 2px solid #1fDD2D;
 	border-radius: 10px;
 	min-width: 80%;
 	min-height: 5%;
+	padding: .2em;
 }
 
 #welcome-header h1 {
-	margin-top: 2.5%;
 	text-align: center;
 	color: #AEDE94;
+	font-size: 40px;
+	font-family: helvetica;
 }
 
 #neighborhood-list {
-	position: absolute;
-	top: 9%;
-	left: 35%;
-	margin: 0;
-	padding: 10px;
-	z-index: 3;
+
+	padding: 5px;
+	z-index: 1;
+	margin: 0 auto;
+	margin-top: .5em;
 	background: #549431;
 	border-radius: 10px;
+	border: 2px solid #1fDD2D;
+	text-align: center;
+	width: 40%;
 }
 
 #neighborhood-list .neighborhood-list-item {
 	display: inline;
 	font-size: 20px;
-	color: #AEDE94;
+	color: white;
+	font-family: courier;
+}
+
+.neighborhood-list-item:hover {
+	cursor: pointer;
 }
 
 .neighborhood-list-item + .neighborhood-list-item {
 	margin-left: 30px;
-}F12
+}
