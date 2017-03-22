@@ -13,11 +13,16 @@
 			<li class="neighborhood-list-item" data-bind="text: name, click: $parent.switchCurrentNeighborhood"></li>
 		</ul>
 	</div>
+	<div id='neighborhood-area-list'>
+		<ul id='area-list' data-bind='foreach: currentNeighborhood().markers()'>
+			<li class="area-list-item" data-bind="event: {dblclick: $parent.closeInfoWindow, click: $parent.showInfoWindow}"><span class="area-text" data-bind="text: name"></span></li>
+		</ul>
+	</div>
 	<div id="map-container">
 		This is the map container :)
 	</div>
 
-	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi1BJ9xxGNg4x1tUgzi64InbXH5ev1wxc&callback=initApp"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi1BJ9xxGNg4x1tUgzi64InbXH5ev1wxc&callback=init"></script>
 	<script type="text/javascript" src="js/lib/jquery-3.1.1.js"></script>
 	<script type="text/javascript" src="js/lib/knockout-3.4.2.js"></script>
 	<script type="text/javascript" src="js/app.js"></script>
