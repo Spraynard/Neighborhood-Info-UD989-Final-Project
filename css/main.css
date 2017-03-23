@@ -9,7 +9,7 @@ html, body {
 	z-index: 3;
 	top: 200px;
 	left: 50px;
-	background:;
+	background: #549431;
 	border: 5px solid #1fDD2D;
 	border-radius: 10px;
 }
@@ -20,19 +20,6 @@ html, body {
 	margin: 0 auto;
 	text-align: center;
 }
-/*
-.area-list-item:first-child {
-	margin-bottom: 10px;
-}
-
-.area-list-item + .area-list-item {
-	margin-bottom: 10px;
-}
-
-.area-list-item:last-child {
-	margin-bottom: 0;
-}
-*/
 
 .area-list-item {
 	padding: 10px;
@@ -40,6 +27,15 @@ html, body {
 	border: 2px solid #1fDD2D;
 	color: white;
 	font-family: helvetica;
+}
+
+.area-list-item:hover {
+	cursor: pointer;
+	background: red;
+}
+
+.area-text {
+	user-select: none;
 }
 
 #map-container {
@@ -101,4 +97,23 @@ html, body {
 
 .neighborhood-list-item + .neighborhood-list-item {
 	margin-left: 30px;
+}
+
+.neighborhood-item-text {
+	user-select: none;
+}
+
+#search-bar-div {
+	position: absolute;
+	bottom: 20px;
+	z-index: 2;
+	height: 5%;
+	width: 50%;
+	left: 25%;
+}
+
+#search-bar-div input {
+	height: 80%;
+	width: 90%;
+	margin: 0 auto;
 }

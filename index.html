@@ -10,13 +10,17 @@
 			<h1>COME ON AND CHECK OUT MY <span data-bind="text: currentNeighborhood().name()"></span> NEIGHBORHOOD</h1>
 		</header>
 		<ul id="neighborhood-list" data-bind="foreach: neighborhoodList">
-			<li class="neighborhood-list-item" data-bind="text: name, click: $parent.switchCurrentNeighborhood"></li>
+			<li class="neighborhood-list-item" data-bind="click: $parent.switchCurrentNeighborhood"><span class="neighborhood-item-text" data-bind="text: name"></span></li>
 		</ul>
 	</div>
 	<div id='neighborhood-area-list'>
-		<ul id='area-list' data-bind='foreach: currentNeighborhood().markers()'>
+		<span style="color: white; font-family: helvetica; background: #549431; margin: 5px; ">Areas of Note In The Neighborhood!</span>
+		<ul id='area-list' data-bind='foreach: filteredMarkers'>
 			<li class="area-list-item" data-bind="event: {dblclick: $parent.closeInfoWindow, click: $parent.showInfoWindow}"><span class="area-text" data-bind="text: name"></span></li>
 		</ul>
+	</div>
+	<div id="search-bar-div">
+		<input id="search-bar" type="search" data-bind="value: query, valueUpdate: 'keyup'" placeholder="Search For A Marker Here!!">
 	</div>
 	<div id="map-container">
 		This is the map container :)
