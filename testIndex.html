@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<title>My Neighborhood</title>
+</head>
+<body>
+	<div id="info-stripe">
+		<header id="welcome-header">
+			<h1>COME ON AND CHECK OUT MY <span data-bind="text: currentNeighborhood().name()"></span> NEIGHBORHOOD</h1>
+		</header>
+		<ul id="neighborhood-list" data-bind="foreach: neighborhoodList">
+			<li class="neighborhood-list-item" data-bind="text: name, click: $parent.switchCurrentNeighborhood"></li>
+		</ul>
+	</div>
+	<div id="map-container">
+		This is the map container :)
+	</div>
+	<script type="text/javascript" src="js/lib/jquery-3.1.1.js"></script>
+	<script type="text/javascript" src="js/lib/knockout-3.4.2.js"></script>
+	<!-- This is used to test the app without loading in the map, causing me to preserve precious data hits and test functionality only when I need to -->
+	<script type="text/javascript" src="js/apptest.js"></script>
+</body>
+</html>

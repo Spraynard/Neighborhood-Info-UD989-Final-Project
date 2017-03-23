@@ -1,0 +1,225 @@
+initialNeighborhoods = [
+	{
+		name: "Grandma's House",
+		address: "591 E. Ridge Circle, Kalamazoo, MI, 49009",
+		latLng: {lat: 42.2913880, lng: -85.6697760},
+		markerObj: null,
+		markers: [{ 
+			name: 'Chipotle Grill',
+			position: {lat: 42.295412, lng: -85.655212},
+			description: 'This is where all the white girls hang out.\
+							Just kidding, though, other girls hang out here too.',
+		},
+		{
+			name: 'Kalamazoo 10',
+			position: {lat: 42.298611 , lng: -85.657182},
+			description: 'I used to go here as a tiny kid and watch movies and matinees.\
+							It was pretty fun but I eventually became an adult',				
+		},
+		{
+			name: 'Steak and Shake',
+			position: {lat: 42.295554, lng: -85.655910},
+			description: 'This is where I got all my steaks and my shakes.',	
+		},
+		{
+			name: 'Aldi',
+			position: {lat: 42.295257, lng: -85.654827},
+			description: "I've never been here.",
+		},
+		{
+			name: '"The Praries" Golf Course',
+			position: {lat: 42.291601, lng: -85.655894},
+			description: 'I used to play golf here a bit when I was the king of the golf game\
+							ever since stopping I have not set a single foot on the course.',		
+		}]
+	},
+	{
+		name: "Flint House",
+		address: "424 Avon Street, Flint, MI, 48503",
+		latLng: {lat: 43.020528, lng: -83.681480},
+		markers: [{
+			name: "Flint Farmer's Market",
+			position: {lat: 43.016913, lng: -83.687040},
+			description: "This is the location of the Flint Farmer's Market"
+		},
+		{
+			name: "Cafe Rhema",
+			position: {lat: 43.016336, lng: -83.691326},
+			description: "Really good coffee shop that I was only able to go to a couple times"
+		},
+		{
+			name: "Flint Drive Road",
+			position: {lat: 43.015871, lng: -83.690624},
+			description: "The old car drive starts on this road. It's actually pretty cool to watch"
+		},
+		{
+			name: "University of Michigan - Flint",
+			position: {lat: 43.019317, lng: -83.688290},
+			description: "A lot of kids went here to learn shit"
+		}]
+	},
+	{
+		name: "Francesca's House",
+		address: "2217 Stonehedge Ave, East Lansing, MI, 48823",
+		latLng: {lat: 42.761935, lng: -84.498405},
+		markers: [{
+			name: 'Michigan State University - Pokemon Go Spot',
+			position: {lat: 42.734200 , lng: -84.482825},
+			description: "This is some PRIME pokemon go territory right here"
+		},
+		{
+			name: "Meijer",
+			position: {lat: 42.762973, lng: -84.500506},
+			description: "This meijers is in walking distance to Francesca's House"
+		},
+		{
+			name: "Movie Theatre - NCG Cinema",
+			position: {lat: 42.764737, lng: -84.515526},
+			description: "I watched James Bond: Spectre with Francesca Here"
+		},
+		{
+			name: "Sam's Club",
+			position: {lat: 42.763555, lng: -84.52019},
+			description: "I never went to this sams club except to be able to get some gas for mah car."
+		}]
+	}
+]
+
+var viewModel = function () {
+	var self = this;
+
+	this.neighborhoodList = ko.observableArray([]);
+	initialNeighborhoods.forEach(function(neighborhood) {
+		self.neighborhoodList.push(new Neighborhood(neighborhood));
+	});
+
+	this.currentNeighborhood = ko.observable(this.neighborhoodList()[0]);
+
+	this.currentgMap = ko.observable(createMap(this.currentNeighborhood().latLng()))
+	this.currentMarkers = ko.observableArray(createMarkers(this.currentgMap, this.currentNeighborhood));
+
+	//Listens to click event on the main page and switches the current neighborhood to the clicked div
+	//After neighborhood is switched, a new map is made (sadly can't cache it) and the markers located on the 
+		//current neighborhood object are rendered on to the map.
+	this.switchCurrentNeighborhood = function (neighborhood) {
+		self.currentNeighborhood(neighborhood);
+		self.currentgMap(createMap(self.currentNeighborhood().latLng()));
+		self.currentMarkers(createMarkers(self.currentgMap, self.currentNeighborhood));
+	}
+
+	this.showInfoWindow = function(marker) {
+		console.log(marker.name())
+		console.log(marker.position())
+		var latChange = marker.position().lat + .005
+		var panPosition = {lat: latChange, lng: marker.position().lng}
+		self.currentgMap().panTo(panPosition);
+		marker.infoWindow().open(self.currentgMap, marker.marker);
+	}
+
+	this.closeInfoWindow = function(marker) {
+		if (marker.infoWindow().open()) {
+			marker.infoWindow().close();
+		}
+	}
+
+	//Search Bar Functionality
+	this.query = ko.observable("");
+
+	//This filters throughout the markers and displays/hides the markers that are searched for.
+	//Thank you stack overflow!!!
+	this.filteredMarkers = ko.computed(function () {
+		var filter = self.query().toLowerCase();
+
+		return ko.utils.arrayFilter(self.currentMarkers(), function(marker) {
+			var doesMatch = marker.name().toLowerCase().indexOf(filter) !== -1;
+
+			marker.isVisible(doesMatch);
+
+			return doesMatch
+		})
+	});
+}
+
+//Creates Markers and puts in an observable array for ease of searchability. Only needs the raw objects passed in (e.g. no '()')
+function createMarkers(gMap, neighborhoodObj) {
+	var markerList = [];
+	markerList.push(new Marker(gMap(), neighborhoodObj().name(), neighborhoodObj().latLng(), neighborhoodObj().address()));
+	neighborhoodObj().markers().forEach(function(markerObj) {
+		markerList.push(new Marker(gMap(), markerObj.name, markerObj.position, markerObj.description))
+	});
+	return markerList
+}
+
+
+// Neighborhood Objects, which will bind with knockout.js
+var Neighborhood = function (data) {
+	this.name = ko.observable(data.name);
+	this.address = ko.observable(data.address);
+	this.info = ko.observable(data.info);
+	this.latLng = ko.observable(data.latLng);
+	this.markers = ko.observable(data.markers);
+}
+
+//Marker ko objects to use for observabiliy. Creates infoWindows on the same marker object.
+var Marker = function(gmap, name, latLng, description) {
+	var self = this;
+
+	this.name = ko.observable(name);
+	this.position = ko.observable(latLng);
+	this.description = ko.observable(description);
+	this.infoWindow = ko.observable(createInfoWindow(this.description()));
+	this.marker = new google.maps.Marker({
+		position: this.position(),
+		map: gmap,
+		animation: google.maps.Animation.DROP
+	});
+	console.log(this.marker);
+	addIWindowOpenListener(this.infoWindow(), gmap, this.marker);
+	addIWindowCloseListener(this.infoWindow(), this.marker);
+
+	this.isVisible = ko.observable(false);
+
+	this.isVisible.subscribe(function (currentState) {
+		if (currentState) {
+			self.marker.setMap(gmap);
+		}
+		else {
+			self.marker.setMap(null);
+		}
+	});
+
+	this.isVisible(true);
+}
+
+//This creates and updates the map data
+function createMap(latLng) {
+	return new google.maps.Map(document.getElementById('map-container'), {
+		center: latLng,
+		zoom: 15
+	});
+}
+
+function createInfoWindow(markerContent) {
+	return new google.maps.InfoWindow( {
+		content: markerContent
+	})
+}
+
+function addIWindowOpenListener(infoWindow, gMap, marker) {
+	marker.addListener('click', function () {
+		infoWindow.open(gMap, marker)
+	});
+}
+
+function addIWindowCloseListener(infoWindow, marker) {
+	marker.addListener('dblclick', function () {
+		if (infoWindow.open()) {
+			infoWindow.close();
+		}
+	});
+}
+//
+// This is the map initializer that is used in the google API callback
+function init() {
+	ko.applyBindings(new viewModel());
+}
