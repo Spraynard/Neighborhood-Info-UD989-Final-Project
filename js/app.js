@@ -1,4 +1,5 @@
 initialNeighborhoods = [
+	//KO  neighborhood objects are build off of these JS objects.
 	{
 		name: "Grandma's House",
 		address: "591 E. Ridge Circle, Kalamazoo, MI, 49009",
@@ -86,6 +87,8 @@ initialNeighborhoods = [
 ]
 
 var viewModel = function () {
+
+	//Setting the self scope
 	var self = this;
 
 	this.neighborhoodList = ko.observableArray([]);
@@ -102,12 +105,18 @@ var viewModel = function () {
 	//After neighborhood is switched, a new map is made (sadly can't cache it) and the markers located on the 
 		//current neighborhood object are rendered on to the map.
 	this.switchCurrentNeighborhood = function (neighborhood) {
+		// summary: Will be used in the DOM as a data-bind when clicked. Used to change 'this.current
+		//			neighborhood' to the selected neighborhood. Loads up a new map with new markers
+		//			based on the object.
+		// parameters: neighborhood - a 'Neighborhood' object
 		self.currentNeighborhood(neighborhood);
 		self.currentgMap(createMap(self.currentNeighborhood().latLng()));
 		self.currentMarkers(createMarkers(self.currentgMap, self.currentNeighborhood));
 	}
 
 	this.showInfoWindow = function(marker) {
+		// sumary: opens an info window, linked to DOM w/ data-bind 
+		// parameters: marker - a 'marker' object
 		console.log(marker.name())
 		console.log(marker.position())
 		var latChange = marker.position().lat + .005
@@ -117,12 +126,16 @@ var viewModel = function () {
 	}
 
 	this.closeInfoWindow = function(marker) {
+		// summary: closes an info window, linked to DOM w/ data-bind 
+		// Parameters:
 		if (marker.infoWindow().open()) {
 			marker.infoWindow().close();
 		}
 	}
 
 	//Search Bar Functionality
+	// 'this.query' is updated on markup, due to a data bind in the index.html.
+	//  starts as ""
 	this.query = ko.observable("");
 
 	//This filters throughout the markers and displays/hides the markers that are searched for.
@@ -131,6 +144,10 @@ var viewModel = function () {
 		var filter = self.query().toLowerCase();
 
 		return ko.utils.arrayFilter(self.currentMarkers(), function(marker) {
+			//Used to filter an array of marker objects. Takes the current markers available,
+			// 'doesMatch' when '.indexOf(filter)' returns any number. -1 counts as a null, I guess.
+			// 	Based on 'doesMatch', changes 'isVisible' prop of the marker
+
 			var doesMatch = marker.name().toLowerCase().indexOf(filter) !== -1;
 
 			marker.isVisible(doesMatch);
@@ -140,7 +157,7 @@ var viewModel = function () {
 	});
 }
 
-//Creates Markers and puts in an observable array for ease of searchability. Only needs the raw objects passed in (e.g. no '()')
+// Creates Markers and puts in an observable array for ease of searchability. 
 function createMarkers(gMap, neighborhoodObj) {
 	var markerList = [];
 	markerList.push(new Marker(gMap(), neighborhoodObj().name(), neighborhoodObj().latLng(), neighborhoodObj().address()));
@@ -152,16 +169,20 @@ function createMarkers(gMap, neighborhoodObj) {
 
 
 // Neighborhood Objects, which will bind with knockout.js
-var Neighborhood = function (data) {
-	this.name = ko.observable(data.name);
-	this.address = ko.observable(data.address);
-	this.info = ko.observable(data.info);
-	this.latLng = ko.observable(data.latLng);
-	this.markers = ko.observable(data.markers);
+var Neighborhood = function (neighborhoodObj) {
+	// summary: Creates a Neighborhood observable object
+	// Parameters: neighborhoodObj - an object with all the props on it
+	this.name = ko.observable(neighborhoodObj.name);
+	this.address = ko.observable(neighborhoodObj.address);
+	this.info = ko.observable(neighborhoodObj.info);
+	this.latLng = ko.observable(neighborhoodObj.latLng);
+	this.markers = ko.observable(neighborhoodObj.markers);
 }
 
 //Marker ko objects to use for observabiliy. Creates infoWindows on the same marker object.
 var Marker = function(gmap, name, latLng, description) {
+			// summary:
+		// Parameters:
 	var self = this;
 
 	this.name = ko.observable(name);
@@ -177,6 +198,7 @@ var Marker = function(gmap, name, latLng, description) {
 	addIWindowOpenListener(this.infoWindow(), gmap, this.marker);
 	addIWindowCloseListener(this.infoWindow(), this.marker);
 
+	//Creates dynamic visibility of markers on the google map
 	this.isVisible = ko.observable(false);
 
 	this.isVisible.subscribe(function (currentState) {
@@ -212,6 +234,8 @@ function addIWindowOpenListener(infoWindow, gMap, marker) {
 }
 
 function addIWindowCloseListener(infoWindow, marker) {
+			// summary:
+		// Parameters:
 	marker.addListener('dblclick', function () {
 		if (infoWindow.open()) {
 			infoWindow.close();

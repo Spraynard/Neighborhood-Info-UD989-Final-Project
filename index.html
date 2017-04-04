@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<!-- Calls Pico -->
+	<!-- Loads Pyhton file: neighborhoodYelp, to be used by Pico -->
+	
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<title>My Neighborhood</title>
 </head>
@@ -28,6 +31,8 @@
 
 	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi1BJ9xxGNg4x1tUgzi64InbXH5ev1wxc&callback=init"></script>
 	<script type="text/javascript" src="js/lib/jquery-3.1.1.js"></script>
+	<script src="/pico/client.js"></script>
+	<script>pico.load("neighborhoodYelp")</script>
 	<script type="text/javascript" src="js/lib/knockout-3.4.2.js"></script>
 	<script type="text/javascript" src="js/app.js"></script>
 </body>
