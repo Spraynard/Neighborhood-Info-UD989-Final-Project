@@ -127,20 +127,50 @@ var viewModel = function () {
 		self.currentMarkers(createMarkers(self.currentgMap, self.currentNeighborhood));
 	}
 
-	this.showInfoWindow = function(marker) {
+	this.toggleInfoWindow = function(marker) {
 		// sumary: opens an info window, linked to DOM w/ data-bind 
 		// parameters: marker - a 'marker' object
+		var picoCall, originalContent, windowContent, object 
 		var latChange = marker.position().lat + .005
 		var panPosition = {lat: latChange, lng: marker.position().lng}
 		self.currentgMap().panTo(panPosition);
-		marker.infoWindow().open(self.currentgMap, marker.marker);
-	}
 
-	this.closeInfoWindow = function(marker) {
-		// summary: closes an info window, linked to DOM w/ data-bind 
-		// Parameters:
-		if (marker.infoWindow().open()) {
+		// Marker Operations
+		// Multiple things that could happen:
+		// 	1. Open up the window, and then call the pico function. When function loads, I inject
+		//		the html and all of that into the info window. User will see, but info window will
+		//		come up faster.
+		//	2. Call the pico function, then on load, open up the marker's infowindow. All of the
+		//		info will be displayed perfectly when it does open it up. Lets try this first, and then
+		//		if the performance is shit, change it over. Easy enough.
+		if (marker.windowBool()) {
 			marker.infoWindow().close();
+			marker.windowBool(false);
+		}
+		else {
+			if (marker.yID() !== null && marker.query() === 0) {
+				marker.infoWindow().open(self.currentgMap, marker.marker);
+				picoCall = apiCall(marker.yID());
+				marker.query(1);
+				picoCall.onload = function () {
+					object = JSON.parse(JSON.parse(picoCall.response));
+					windowContent = '<h1>' + object.name + '</h1>\
+									<br>\
+									<h3>' + marker.description() + '</h3>\
+									<br>\
+									<p>This place has ' + object.rating + ' out of 5 stars</p>';
+
+					marker.infoWindow().setContent(windowContent);
+				}
+			}
+			else if (marker.query() === 1) {
+				marker.infoWindow().open(self.currentgMap, marker.marker);
+			}
+			else {
+				marker.infoWindow().setContent('<h3>' + marker.description() + '</h3>');
+				marker.infoWindow().open(self.currentgMap, marker.marker);
+			}
+			marker.windowBool(true);
 		}
 	}
 
@@ -199,14 +229,16 @@ var Marker = function(gmap, name, yID, latLng, description) {
 	this.name = ko.observable(name);
 	this.position = ko.observable(latLng);
 	this.description = ko.observable(description);
-	this.infoWindow = ko.observable(createInfoWindow(this.description()));
+	this.infoWindow = ko.observable(createInfoWindow());
+	this.windowBool = ko.observable(false);
+	this.query = ko.observable(0);
 	this.yID = ko.observable(yID);
 	this.marker = new google.maps.Marker({
 		position: self.position(),
 		map: gmap,
 		animation: google.maps.Animation.DROP
 	});
-	addIWindowOpenListener(this.infoWindow(), gmap, this.marker);
+	addMarkerClickInfoToggle(this.infoWindow(), gmap, this.marker, this.yID, this.query, this.windowBool, this.description);
 	addIWindowCloseListener(this.infoWindow(), this.marker);
 
 	//Creates dynamic visibility of markers on the google map
@@ -224,6 +256,11 @@ var Marker = function(gmap, name, yID, latLng, description) {
 	this.isVisible(true);
 }
 
+function apiCall(yelpID) {
+	picoCall = neighborhoodYelp.idLookup(yelpID);
+	return picoCall;
+}
+
 //This creates and updates the map data
 function createMap(latLng) {
 	return new google.maps.Map(document.getElementById('map-container'), {
@@ -232,15 +269,44 @@ function createMap(latLng) {
 	});
 }
 
-function createInfoWindow(markerContent) {
+function createInfoWindow(markerContent = "") {
 	return new google.maps.InfoWindow( {
 		content: markerContent
 	})
 }
 
-function addIWindowOpenListener(infoWindow, gMap, marker) {
+function addMarkerClickInfoToggle(infoWindow, gMap, marker, yID, query, windowbool, description) {
 	marker.addListener('click', function () {
-		infoWindow.open(gMap, marker)
+		// console.log(marker.name);
+		// infoWindow.open(gMap, marker)
+		if (windowbool()) {
+			infoWindow.close();
+			windowbool(false);
+		}
+		else {
+			if (yID() !== null && query() === 0) {
+				infoWindow.open(gMap, marker)
+				picoCall = apiCall(yID());
+				query(1);
+				picoCall.onload = function () {
+					object = JSON.parse(JSON.parse(picoCall.response));
+					windowContent = '<h1>' + object.name + '</h1>\
+									<br>\
+									<h3>' + description() + '</h3>\
+									<br>\
+									<p>This place has ' + object.rating + ' out of 5 stars</p>';
+					infoWindow.setContent(windowContent);					
+				}
+			}
+			else if (query() === 1) {
+				infoWindow.open(gMap, marker)
+			}
+			else {
+				infoWindow.setContent('<h3>' + description() + '</h3>');
+				infoWindow.open(gMap, marker)
+			}
+			windowbool(true);
+		}
 	});
 }
 
@@ -259,5 +325,3 @@ function init() {
 	ko.applyBindings(new viewModel());
 }
 
-neighborhoodYelp.idLookup('chipotle-mexican-grill-kalamazoo')
-// console.log(a);
